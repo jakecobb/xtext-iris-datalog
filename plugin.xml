@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<plugin>
+
+  <extension point="org.eclipse.emf.ecore.generated_package">
+    <package 
+       uri = "http://www.jakecobb.com/dsl/IrisDatalog" 
+       class = "com.jakecobb.dsl.irisDatalog.IrisDatalogPackage"
+       genModel = "model/generated/IrisDatalog.genmodel" /> 
+	
+  </extension>
+
+
+
+</plugin>

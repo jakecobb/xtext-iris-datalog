@@ -1,0 +1,48 @@
+grammar com.jakecobb.dsl.IrisDatalog with org.eclipse.xtext.common.Terminals
+
+generate irisDatalog "http://www.jakecobb.com/dsl/IrisDatalog"
+
+Model:
+	rules += RuleOrFact*;
+	
+terminal RPAREN: ')';
+terminal LPAREN: '(';
+terminal DOT: '.';
+terminal RULE_SEP: ':-';
+terminal COMMA: ',';
+terminal OPERATOR: '<' | '<=' | '>' | '>=' | '!=' | '=';
+	
+COMMENTS: (SL_COMMENT+ | ML_COMMENT+)+;
+
+FactList: facts+=Fact (COMMA facts+=Fact)* DOT;
+	
+Fact:
+	name=ID LPAREN params=LiteralList RPAREN DOT
+;
+
+RuleHead:
+	name=ID LPAREN params=VariableList RPAREN RULE_SEP
+;
+
+RuleLiteral:
+	name=ID LPAREN params=ParamList RPAREN | Param name=OPERATOR Param
+;
+
+Rule:
+	RuleHead literals+=RuleLiteral (COMMA literals+=RuleLiteral)* DOT
+;
+
+RuleOrFact: Rule | Fact;
+
+ParamList: params+=Param (COMMA params+=Param)*;
+
+LiteralList: DatalogLiteral | DatalogLiteral COMMA LiteralList;
+VariableList: variables+= DatalogVariable (COMMA variables+=DatalogVariable)*;
+
+DatalogVariable: '?' ID;
+DatalogLiteral: STRING | INT;
+
+Param: DatalogLiteral | DatalogVariable;
+
+OperatorExpression: Param OPERATOR Param;
+
