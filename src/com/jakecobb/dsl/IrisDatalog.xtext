@@ -3,7 +3,7 @@ grammar com.jakecobb.dsl.IrisDatalog with org.eclipse.xtext.common.Terminals
 generate irisDatalog "http://www.jakecobb.com/dsl/IrisDatalog"
 
 Model:
-	rules += RuleOrFact*;
+	entries += Entry*;
 	
 terminal RPAREN: ')';
 terminal LPAREN: '(';
@@ -11,6 +11,7 @@ terminal DOT: '.';
 terminal RULE_SEP: ':-';
 terminal COMMA: ',';
 terminal OPERATOR: '<' | '<=' | '>' | '>=' | '!=' | '=';
+terminal QUERY_START: '?-';
 	
 COMMENTS: (SL_COMMENT+ | ML_COMMENT+)+;
 
@@ -25,19 +26,22 @@ RuleHead:
 ;
 
 RuleLiteral:
-	name=ID LPAREN params=ParamList RPAREN | Param name=OPERATOR Param
+	(not ?= 'not')? name = ID LPAREN params=ParamList RPAREN | Param name=OPERATOR Param
 ;
 
 Rule:
 	RuleHead literals+=RuleLiteral (COMMA literals+=RuleLiteral)* DOT
 ;
 
-RuleOrFact: Rule | Fact;
+Query:
+	QUERY_START literals+=RuleLiteral (COMMA literals+=RuleLiteral)* DOT
+;
+
+Entry: Rule | Fact | Query;
 
 ParamList: params+=Param (COMMA params+=Param)*;
-
-LiteralList: DatalogLiteral | DatalogLiteral COMMA LiteralList;
-VariableList: variables+= DatalogVariable (COMMA variables+=DatalogVariable)*;
+LiteralList: literals+=DatalogLiteral (COMMA literals+=DatalogLiteral)*;
+VariableList: variables+=DatalogVariable (COMMA variables+=DatalogVariable)*;
 
 DatalogVariable: '?' ID;
 DatalogLiteral: STRING | INT;
